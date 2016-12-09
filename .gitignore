@@ -1,0 +1,43 @@
+# -*- mode: conf -*-
+
+# Build outputs
+debug/
+release/
+
+# Build artefacts
+fit-sync-ant
+fit-sync-usb
+99-fit-sync.rules
+fit-sync-usb.service
+fit-sync-epo.service
+*.o
+*.d
+
+# Visual Studio files
+*.suo
+*.ncb
+*.db
+*.user
+*.pdb
+*.idb
+*.xss
+*.xsc
+*.xsx
+ipch/
+*.sdf
+*.opensdf
+
+.DS_Store
+._.DS_Store
+
+# Editor specific files
+*.*~
+*.~*
+*.swp
+
+# Git temporary merge files
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
+*.orig

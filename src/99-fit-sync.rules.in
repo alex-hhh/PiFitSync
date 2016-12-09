@@ -1,0 +1,62 @@
+# udev -*- mode: conf -*- file for my local linux (Raspberry PI) installation.
+
+# Keep all the things in one place, even though they are not really related.
+# try "man udev" for documentation
+
+### ANT Usb stick rules
+
+# Change the mode of the Dynastream ANT UsbStick2 so all users can read and
+# write to it.
+
+# If you do not want all users to be able to read and write to your usb stick
+# you might want to adjust the mode to 0660 and restrict it to a group of
+# users with GROUP="ant" or the mode to 0600 and restrict it to a single user
+# with OWNER="user".
+
+SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="0fcf", ATTR{idProduct}=="1008", MODE="0666", SYMLINK+="ttyANT2"
+SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="0fcf", ATTR{idProduct}=="1009", MODE="0666", SYMLINK+="ttyANT3"
+
+### Mount a Garmin and Fly6 camera (as a disk) and do the right thing for each
+### of them.
+
+# we try to mount devices appear as a SCSI disks (sd*) with or without numbers.
+# Garmin has the file system on /dev/sda, Fly6 on /dev/sda1
+
+KERNEL=="sd[a-z]", GOTO="start_automount"
+KERNEL=="sd[a-z][0-9]", GOTO="start_automount"
+GOTO="end_automount"
+
+LABEL="start_automount"
+IMPORT={program}="/sbin/blkid -o udev -p /dev/%k"
+ENV{ID_FS_LABEL}=="Fly6", GOTO="fly6_automount"
+ENV{ID_FS_LABEL}=="GARMIN", GOTO="garmin_automount"
+GOTO="end_automount"
+
+### Mount a Garmin device on /media/garmin and start synching files
+
+LABEL="garmin_automount"
+
+ACTION=="add", RUN+="/bin/mount -t vfat -osync,noexec,noatime,nodiratime,uid=pi /dev/%k /media/garmin"
+ACTION=="add", RUN+="/bin/systemctl start fit-sync-usb.service"
+ACTION=="add", RUN+="/bin/systemctl start fit-sync-epo.service"
+
+# Run umount when the device is removed (this will only useful if the device
+# is prematurely removed.)
+ACTION=="remove", RUN+="/bin/umount -l /media/garmin"
+
+GOTO="end_automount"
+
+### Mount a fly6 camera on /media/fly6
+
+LABEL="fly6_automount"
+
+ACTION=="add", RUN+="/bin/mount -t vfat -osync,noexec,noatime,nodiratime,uid=pi /dev/%k /media/fly6"
+
+# Run umount when the device is removed (this will only useful if the device
+# is prematurely removed.)
+ACTION=="remove", RUN+="/bin/umount -l /media/fly6"
+
+GOTO="end_automount"
+
+LABEL="end_automount"
+

@@ -1,0 +1,13 @@
+; -*- mode: conf -*-
+
+[Unit]
+Description=Setup PID folder for fit sync service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/install -o pi -g root -m 755 -d /run/fit-sync
+Restart=no
+WorkingDirectory=/
+
+[Install]
+WantedBy=multi-user.target
