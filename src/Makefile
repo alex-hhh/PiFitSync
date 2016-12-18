@@ -23,7 +23,14 @@ ANT_OBJS=$(ANT_SOURCES:.cpp=.o)
 USB_SOURCES=fit-sync-usb.cpp
 USB_OBJS=$(USB_SOURCES:.cpp=.o)
 
-all : fit-sync-ant fit-sync-usb 99-fit-sync.rules fit-sync-usb.service fit-sync-epo.service
+TARGETS= fit-sync-ant fit-sync-usb fit-sync-epo.py \
+      99-fit-sync.rules         \
+      fit-sync-setup.service    \
+      fit-sync-ant.service      \
+      fit-sync-usb.service      \
+      fit-sync-epo.service
+
+all : $(TARGETS)
 
 fit-sync-ant : $(COMMON_OBJS) $(ANT_OBJS)
 	@echo "Creating $@ ..."
@@ -38,7 +45,7 @@ clean:
 	-rm fit-sync-ant fit-sync-usb 99-fit-sync.rules
 	-rm fit-sync-usb.service fit-sync-epo.service
 
-install: fit-sync-ant fit-sync-usb fit-sync-epo.py 99-fit-sync.rules fit-sync-setup.service fit-sync-usb.service fit-sync-epo.service
+install: $(TARGETS)
 	mkdir --parents $(BINDIR)
 	$(INSTALL) --strip fit-sync-ant $(BINDIR)
 	$(INSTALL) --strip fit-sync-usb $(BINDIR)
@@ -47,9 +54,10 @@ install: fit-sync-ant fit-sync-usb fit-sync-epo.py 99-fit-sync.rules fit-sync-se
 	$(INSTALL) -m 644 99-fit-sync.rules $(UDEVDIR)
 	$(INSTALL) -m 644 fit-sync-setup.service $(SYSTEMDDIR)
 	$(INSTALL) -m 644 fit-sync-usb.service $(SYSTEMDDIR)
+	$(INSTALL) -m 644 fit-sync-ant.service $(SYSTEMDDIR)
 	$(INSTALL) -m 644 fit-sync-epo.service $(SYSTEMDDIR)
 	systemctl daemon-reload
-	systemctl enable fit-sync-setup.service
+	systemctl enable fit-sync-setup.service fit-sync-ant.service
 
 -include $(OBJS:.o=.d)
 

@@ -1,0 +1,17 @@
+; -*- mode: conf -*-
+
+[Unit]
+Description=Download FIT files from Garmin devices (ANT-FS version)
+After=fit-sync-setup.service
+
+[Service]
+Type=forking
+PIDFile=/run/fit-sync/fit-sync-ant.pid
+ExecStart=@@PREFIX@@/bin/fit-sync-ant -d
+Restart=no
+WorkingDirectory=/
+User=pi
+Group=users
+
+[Install]
+WantedBy=multi-user.target

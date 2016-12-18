@@ -10,6 +10,7 @@ fit-sync-usb
 99-fit-sync.rules
 fit-sync-usb.service
 fit-sync-epo.service
+fit-sync-ant.service
 *.o
 *.d
 
