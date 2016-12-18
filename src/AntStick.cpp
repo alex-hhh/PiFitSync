@@ -163,6 +163,11 @@ void AntChannel::RequestClose()
 
 // ........................................................... AntStick ....
 
+const char * AntStickNotFound::what() const noexcept
+{
+    return "USB ANT stick not found";
+}
+
 // ANT+ memory sticks vendor and product ids.  We will use the first USB
 // device found.
 struct ant_stick_devid_ {
@@ -305,7 +310,7 @@ AntStick::AntStick()
         m_Device = FindAntStick();
         if (! m_Device)
         {
-            throw std::runtime_error("no ant-stick found");
+            throw AntStickNotFound();
         }
         int r = libusb_open(m_Device, &m_DeviceHandle);
         if (r < 0)

@@ -72,6 +72,12 @@ void ProcessAntSticks(std::ostream &log)
             a.SetNetworkKey (AntFsKey);
             ProcessChannels(a, log);
         }
+        catch (const AntStickNotFound &e) {
+            PutTimestamp(log);
+            log << e.what() << std::endl;
+            syslog(LOG_NOTICE, "will shutdown, could not find ANT stick device");
+            return;
+        }
         catch (std::exception &e) {
             PutTimestamp(log);
             log << e.what() << std::endl;

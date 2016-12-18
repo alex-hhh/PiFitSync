@@ -54,6 +54,14 @@ protected:
 
 // ........................................................... AntStick ....
 
+/** Exception thrown when the ANT stick is not found (perhaps because it is
+    not plugged into a USB port). */
+class AntStickNotFound : public std::exception
+{
+public:
+    const char * what() const noexcept override;
+};
+
 class AntStick
 {
   friend AntChannel;
