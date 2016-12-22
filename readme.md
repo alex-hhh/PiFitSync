@@ -1,44 +1,56 @@
-# Sync FIT files on a Raspberry PI and update EPO data on the device
+# Sync FIT files on a Raspberry PI
 
-## Overview
+Use a [Raspberry PI](http://www.raspberrypi.org) to dowload FIT files from a
+Garmin device and make them available over a network drive.  It can be used
+for a complete offline solution of downloading FIT files for use with programs
+such as [ActivityLog2](http://alex-hhh.github.io/ActivityLog2/)
+or [GoldenCheetah](http://www.goldencheetah.org/), without the need to attach
+the USB charging cradle to a laptop or having to download them from a web
+service.
 
 This works as follows:
 
-* USB charging cradle is connected to the USB port on a Raspberry PI
-* When the FR920 is connected for charging, a program on the PI copies all the
-  FIT files off the device onto a local folder
-* Another script that downloads the EPO file (GPS quick sync data) for the
-  device.
-* The local folder on the PI is shared over the home network and mounted as a
-  drive on the local network.
-* On the laptop, I FIT files show up on the network drive and can be imported.
+* The Raspberry Pi is connected to the local home network
+* USB charging cradle is connected to a USB port on the Raspberry Pi
+* When a Garmin Device is connected to the cradle for charging, all the FIT
+  files are copied off the device onto a local folder.  At the same time,
+  updated EPO data (for GPS quick sync) is copied onto the device.
+* The downloaded FIT files are shared over a network folder on the local
+  network
+* On the laptop, the FIT files show up on a network drive and can be imported
+  into ActivityLog2 or GoldenCheetah.
 
-There is also support for downloading using an USB ANT Dongle, but the service
-for that is not installed.
+There is also support for downloading files using an ANT-FS USB stick, for
+older Garmin Devices that use this method.  In that case the download is
+initiated when the device comes in range of the Raspberry PI.
 
-## Setup
+## Installation an Setup
 
-### Install samba and setup network shares for PI user
+### Setup network shares on the Raspberry PI
 
-  To install samba run the following:
+We will create two network shares.  A "FitFiles" read-only share accessible
+with the "pi" user and your password.  FIT files will become available on that
+share.  Another share, "PiDropbox" is a read-write share, that can be used to
+transfer files onto the Raspberry PI (it is mapped to the Dropbox folder
+inside the pi home folder).
+
+To install samba run the following:
 
     sudo apt-get install samba samba-common-bin smbclient
 
-  Setup a SAMBA password for the `pi` user, (can be different than the login
-  password, but I like to keep them the same)
+Setup a SAMBA password for the `pi` user, (can be different than the login
+password, but I like to keep them the same)
 
     sudo smbpasswd -a pi
 
-  To add exported shares for the Pi user, first create the directories to be
-  shared.  FitSync is where FIT files will be downloaded, it is read-only via
-  samba.  Dropbox is a folder where data can be written to, usefull to put
-  files in the account.
+To add exported shares for the Pi user, first create the directories to be
+shared:
 
     mkdir ~/FitSync
     mkdir ~/Dropbox
 
-  Edit `/etc/samba/smb.conf` to enable user shares with password authenticated
-  users, add the following to the end:
+Edit `/etc/samba/smb.conf` to enable user shares with password authenticated
+users, add the following to the end.
 
     [FitFiles]
             comment=FIT files downloaded from devices
@@ -54,15 +66,16 @@ for that is not installed.
             browseable = yes
             path=/home/pi/Dropbox
 
-### Setup FitSync
+### Install PiFitSync
 
 #### Build and install libusb and other prerequisites
 
-  `libudev`, `git`, `python3` and `rsync` will need to be installed first:
+Packages `libudev`, `git`, `python3` and `rsync` will need to be installed
+first:
   
     sudo apt-get install libudev-dev git rsync python3
 
-  Copy (via the Dropbox share) libusb-1.0.18.tar.bz2 onto the RPI, than run:
+Obtain libusb 1.0.18, copy it (via the Dropbox share) onto the RPI, than run:
 
     mkdir ~/pkg
     mv ~/Dropbox/libusb-1.0.18.tar.bz2 ~/pkg/
@@ -75,16 +88,8 @@ for that is not installed.
     
 #### Build and install FitSync
 
-  To put the FitSync sources on the PI, make an empty repository first:
+Clone this repository on the Raspberry PI and run the following commands:
   
-    mkdir ~/pkg/FitSync
-    cd ~/pkg/FitSync
-    git init
-    
-  From the other laptop, push the source to the rpi (assuming remote is
-  already set up).  You will need to build and install it:
-  
-    git checkout master
     cd src
     make
     sudo make install
@@ -103,8 +108,9 @@ directory:
     ln -s /media/garmin/GARMIN/ACTIVITY ~/fr920-activities
     ln -s /media/garmin/GARMIN/NEWFILES ~/fr920-newfiles
 
-Create symling of the device name to the devices activities (so we can browse
-directly to "X:\0-ByName\fr920" and won't have to remember the device ID:
+Create a symlink of the device name to the devices activities, so we can
+browse directly to "X:\0-ByName\fr920" and won't have to remember the device
+ID:
     
     mkdir ~/FitSync/0-ByName
     ### REPLACE with the real device serial number:
