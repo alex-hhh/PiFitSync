@@ -3,10 +3,12 @@
 Use a [Raspberry PI](http://www.raspberrypi.org) to dowload FIT files from a
 Garmin device and make them available over a network drive.  It can be used
 for a complete offline solution of downloading FIT files for use with programs
-such as [ActivityLog2](http://alex-hhh.github.io/ActivityLog2/)
+such as [ActivityLog2](https://github.com/alex-hhh/ActivityLog2)
 or [GoldenCheetah](http://www.goldencheetah.org/), without the need to attach
 the USB charging cradle to a laptop or having to download them from a web
 service.
+
+![Hardware Setup](./hwsetup.jpg)
 
 This works as follows:
 
