@@ -52,13 +52,21 @@ shared:
     mkdir ~/Dropbox
 
 Edit `/etc/samba/smb.conf` to enable user shares with password authenticated
-users, add the following to the end.
+users, add the following to the `[Global]` section:
+  
+    unix extensions = no
+    follow symlinks = yes
+    wide links = no
+    log level = 3
+  
+Also add the following to the end of the same file (`/etc/samba/smb.conf`):
 
     [FitFiles]
             comment=FIT files downloaded from devices
             valid users = pi
             read only = yes
             browseable = yes
+            follow symlinks = yes
             path=/home/pi/FitSync
 
     [PiDropbox]
@@ -118,3 +126,9 @@ ID:
     ### REPLACE with the real device serial number:
     ln -s ~/FitSync/3916163708/Activities ~/FitSync/0-ByName/fr920
 
+### Monitoring and Diagnosing faults
+
+the application will log its messages at 
+
+    /var/log/user.log
+    
