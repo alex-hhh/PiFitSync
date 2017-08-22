@@ -52,11 +52,10 @@ shared:
     mkdir ~/Dropbox
 
 Edit `/etc/samba/smb.conf` to enable user shares with password authenticated
-users, add the following to the `[Global]` section:
+users, add the following to the `[Global]` section (**NOTE** it is unclear why
+"wide links=yes" is necessary, as all links are inside the shared folder):
   
     unix extensions = no
-    follow symlinks = yes
-    wide links = no
     log level = 3
   
 Also add the following to the end of the same file (`/etc/samba/smb.conf`):
@@ -67,6 +66,7 @@ Also add the following to the end of the same file (`/etc/samba/smb.conf`):
             read only = yes
             browseable = yes
             follow symlinks = yes
+            wide links = yes
             path=/home/pi/FitSync
 
     [PiDropbox]
