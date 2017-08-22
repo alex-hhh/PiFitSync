@@ -27,7 +27,7 @@ KERNEL=="sd[a-z][0-9]", GOTO="start_automount"
 GOTO="end_automount"
 
 LABEL="start_automount"
-IMPORT={program}="/sbin/blkid -o udev -p /dev/%k"
+IMPORT{program}="/sbin/blkid -o udev -p /dev/%k"
 ENV{ID_FS_LABEL}=="Fly6", GOTO="fly6_automount"
 ENV{ID_FS_LABEL}=="GARMIN", GOTO="garmin_automount"
 GOTO="end_automount"
