@@ -63,7 +63,7 @@ if __name__ == '__main__':
             syslog.syslog(syslog.LOG_INFO, "wrote EPO data to %s" % (args.output_file,));
         else:
             sys.stdout.write("Wrote data to %s\n" % (args.output_file,));
-    except Exception, e:
+    except Exception as e:
         if args.syslog:
             syslog.syslog(syslog.LOG_ERROR, e.str());
         else:

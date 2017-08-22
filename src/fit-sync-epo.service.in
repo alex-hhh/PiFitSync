@@ -5,8 +5,6 @@ Description=Update EPO data for Garmin devices
 
 [Service]
 Type=simple
-; PIDFile=/run/fit-sync/fit-sync-usb.pid
-; ExecStartPre=-/bin/install -o pi -g root -m 755 -d /run/fit-sync
 ExecStart=@@PREFIX@@/bin/fit-sync-epo -s /media/garmin/GARMIN/REMOTESW/EPO.BIN
 Restart=no
 WorkingDirectory=/media/garmin
