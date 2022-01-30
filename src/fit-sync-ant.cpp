@@ -107,8 +107,17 @@ int main(int argc,  char** argv)
     }
 
     if (daemon_mode) {
-        daemon(0, 0);
-        openlog("fit-sync", 0, LOG_USER);
+        try {
+            int r = daemon(0, 0);
+            if (r != 0) {
+                throw UnixException("daemon", errno);
+            }
+            openlog("fit-sync", 0, LOG_USER);
+        }
+        catch (const std::exception &e) {
+            std::cerr << e.what() << std::endl;
+            return 1;
+        }
     }
 
     bool libusb_initialized = false;
@@ -139,7 +148,7 @@ int main(int argc,  char** argv)
     }
     catch (const std::exception &e)
     {
-        syslog(LOG_ERR, e.what());
+        syslog(LOG_ERR, "%s", e.what());
         std::cerr << e.what() << std::endl;
     }
     ReleasePidLock(g_PidFile);

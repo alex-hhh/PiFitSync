@@ -1,0 +1,12 @@
+; -*- mode: conf -*-
+[Unit]
+Description=Mount the fr945 MTP device
+
+[Service]
+Type=forking
+ExecStart=@@BINDIR@@/mount-fr945
+ExecStop=/usr/bin/fusermount -u /media/fr945
+Restart=no
+WorkingDirectory=/
+User=root
+Group=root

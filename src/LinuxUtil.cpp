@@ -24,6 +24,12 @@ namespace FitSync
         // empty
     }
 
+    UnixException::UnixException (const std::string &who, int error_code)
+        : m_Who(who), m_ErrorCode(error_code), m_MessageDone(false)
+    {
+        // empty
+    }
+
     const char* UnixException::what() const noexcept(true)
     {
         if (!m_MessageDone) {
@@ -136,17 +142,13 @@ namespace FitSync
 
     bool AquirePidLock(const char *pid_file_name)
     {
-        char buf[32];
-    
         // NOTE: the flag combination below will ensure that open() succedes
         // only if g_PidFile does not exist (and the file is created).
         int fd = open(pid_file_name, O_WRONLY | O_CREAT | O_EXCL, 0444);
         if (fd != -1)
         {
-            int n = snprintf(buf, sizeof(buf), "%d", getpid());
-            if (n > (int)sizeof(buf) || n < 0)
-                throw std::runtime_error("AquirePidLock: snprintf failed");
-            int r = write(fd, buf, strlen(buf));
+            std::string buf = std::to_string(getpid());
+            int r = write(fd, &buf[0], buf.size());
             if (r == -1)
                 throw UnixException("AquirePidLock: write", errno);
             close(fd);
@@ -155,6 +157,7 @@ namespace FitSync
         else
         {
             // There is a PID file, check if the PID still exists.
+            char buf[32];
             int fd = open(pid_file_name, O_RDONLY, 0);
             if (fd == -1)
                 throw UnixException("AquirePidLock: open", errno);

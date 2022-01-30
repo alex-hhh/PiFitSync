@@ -11,6 +11,10 @@ fit-sync-usb
 fit-sync-usb.service
 fit-sync-epo.service
 fit-sync-ant.service
+fit-syn-setup.service
+mount-fr945.service
+sync-fr945.service
+
 *.o
 *.d
 

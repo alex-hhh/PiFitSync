@@ -7,11 +7,11 @@ After=fit-sync-setup.service
 [Service]
 Type=forking
 PIDFile=/run/fit-sync/fit-sync-ant.pid
-ExecStart=@@PREFIX@@/bin/fit-sync-ant -d
+ExecStart=@@BINDIR@@/fit-sync-ant -d
 Restart=no
 WorkingDirectory=/
-User=pi
-Group=users
+User=@@USER@@
+Group=@@GROUP@@
 
 [Install]
 WantedBy=multi-user.target

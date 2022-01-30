@@ -14,6 +14,7 @@ namespace FitSync
     {
     public:
         UnixException(const char *who, int error_code);
+        UnixException (const std::string &who, int error_code);
         const char* what() const noexcept(true);
         int error_code() { return m_ErrorCode; }
 

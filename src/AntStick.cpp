@@ -225,7 +225,13 @@ libusb_device* FindAntStick()
  */
 void ConfigureAntStick(libusb_device_handle *ant_stick)
 {
-    int r = libusb_claim_interface(ant_stick, 0); // Interface 0 must always exist
+    // Detach any kernel driver from the interface we are about to claim.
+    // This API call is Linux only.
+    int r = libusb_detach_kernel_driver(ant_stick, 0);
+    if (r != 0 && r != LIBUSB_ERROR_NOT_FOUND)
+        throw LibusbException("libusb_detach_kernel_driver", r);
+    
+    r = libusb_claim_interface(ant_stick, 0); // Interface 0 must always exist
     if (r < 0)
         throw LibusbException("libusb_claim_interface", r);
 

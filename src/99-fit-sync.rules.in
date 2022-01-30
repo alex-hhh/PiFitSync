@@ -3,6 +3,9 @@
 # Keep all the things in one place, even though they are not really related.
 # try "man udev" for documentation
 
+# HINT: look for the device in /var/log/syslog and run  "sudo udevadm test
+# $DEVNAME" to test these rules.
+
 ### ANT Usb stick rules
 
 # Change the mode of the Dynastream ANT UsbStick2 so all users can read and
@@ -15,6 +18,9 @@
 
 SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="0fcf", ATTR{idProduct}=="1008", MODE="0666", SYMLINK+="ttyANT2"
 SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="0fcf", ATTR{idProduct}=="1009", MODE="0666", SYMLINK+="ttyANT3"
+
+SUBSYSTEM=="usb", ACTION=="add", ATTR{interface}=="MTP" RUN+="@@BINDIR@@/on-mtp-added $devpath"
+SUBSYSTEM=="usb", ACTION=="remove", RUN+="@@BINDIR@@/on-mtp-removed $kernel"
 
 ### Mount a Garmin and Fly6 camera (as a disk) and do the right thing for each
 ### of them.
@@ -36,7 +42,7 @@ GOTO="end_automount"
 
 LABEL="garmin_automount"
 
-ACTION=="add", RUN+="/bin/mount -t vfat -osync,noexec,noatime,nodiratime,uid=pi /dev/%k /media/garmin"
+ACTION=="add", RUN+="/bin/mount -t vfat -osync,noexec,noatime,nodiratime,uid=@@USER@@ /dev/%k /media/garmin"
 ACTION=="add", RUN+="/bin/systemctl start fit-sync-usb.service"
 ACTION=="add", RUN+="/bin/systemctl start fit-sync-epo.service"
 
@@ -50,13 +56,11 @@ GOTO="end_automount"
 
 LABEL="fly6_automount"
 
-ACTION=="add", RUN+="/bin/mount -t vfat -osync,noexec,noatime,nodiratime,uid=pi /dev/%k /media/fly6"
+ACTION=="add", RUN+="/bin/mount -t vfat -osync,noexec,noatime,nodiratime,uid=@@USER@@ /dev/%k /media/fly6"
 
 # Run umount when the device is removed (this will only useful if the device
 # is prematurely removed.)
 ACTION=="remove", RUN+="/bin/umount -l /media/fly6"
-
 GOTO="end_automount"
 
 LABEL="end_automount"
-

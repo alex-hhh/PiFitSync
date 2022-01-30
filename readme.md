@@ -54,10 +54,10 @@ shared:
 Edit `/etc/samba/smb.conf` to enable user shares with password authenticated
 users, add the following to the `[Global]` section (**NOTE** it is unclear why
 "wide links=yes" is necessary, as all links are inside the shared folder):
-  
+
     unix extensions = no
     log level = 3
-  
+
 Also add the following to the end of the same file (`/etc/samba/smb.conf`):
 
     [FitFiles]
@@ -78,57 +78,42 @@ Also add the following to the end of the same file (`/etc/samba/smb.conf`):
 
 ### Install PiFitSync
 
-#### Build and install libusb and other prerequisites
+#### Prerequisites
 
-Packages `libudev`, `git`, `python3` and `rsync` will need to be installed
-first:
-  
-    sudo apt-get install libudev-dev git rsync python3
+Packages `libudev`, `git`, `python3` and `rsync`, `libusb` and `jmtpfs` will
+need to be installed first:
 
-Obtain libusb 1.0.18, copy it (via the Dropbox share) onto the RPI, than run:
+    sudo apt-get install libudev-dev git rsync libusb-1.0-0-dev jmtpfs
 
-    mkdir ~/pkg
-    mv ~/Dropbox/libusb-1.0.18.tar.bz2 ~/pkg/
-    cd ~/pkg
-    tar xjf libusb-1.0.18.tar.bz2
-    cd libusb-1.0.18
-    ./configure
-    make
-    sudo make install
-    
 #### Build and install FitSync
 
 Clone this repository on the Raspberry PI and run the following commands:
-  
+
     cd src
     make
     sudo make install
 
 #### Setup other directories
 
-Create the mount point directories for the devices:
-
-    sudo mkdir -p /media/garmin
-    sudo mkdir -p /media/fly6
+The `Makefile` sets things up to mount garmin device file systems in the
+`/media/` folder and will arrange for the sync programs to download data from
+those folders into `~/FitSync`.  It is sometimes convenient to have access to
+those folders directly.
 
 Create symlinks so we can access device locations them from the PI home
 directory:
-    
-    ln -s /media/fly6 ~/fly6
+
     ln -s /media/garmin/GARMIN/ACTIVITY ~/fr920-activities
     ln -s /media/garmin/GARMIN/NEWFILES ~/fr920-newfiles
 
 Create a symlink of the device name to the devices activities, so we can
 browse directly to "X:\0-ByName\fr920" and won't have to remember the device
 ID:
-    
+
     mkdir ~/FitSync/0-ByName
     ### REPLACE with the real device serial number:
     ln -s ~/FitSync/3916163708/Activities ~/FitSync/0-ByName/fr920
 
 ### Monitoring and Diagnosing faults
 
-the application will log its messages at 
-
-    /var/log/user.log
-    
+The application will log its messages at `/var/log/syslog`

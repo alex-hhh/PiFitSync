@@ -102,7 +102,7 @@ void ProcessFitFile(const std::string &path)
         std::ostringstream msg;
         msg << path << ": " << e.what();
         if (g_DaemonMode)
-            syslog(LOG_ERR, msg.str().c_str());
+            syslog(LOG_ERR, "%s", msg.str().c_str());
         else
             std::cerr << msg.str() << "\n";
     }
@@ -124,7 +124,7 @@ void ScanDir(const std::string &dir)
             std::ostringstream msg;
             msg << path.str() << ", " << ex.what();
             if (g_DaemonMode)
-                syslog(LOG_ERR, msg.str().c_str());
+                syslog(LOG_ERR, "%s", msg.str().c_str());
             else
                 std::cerr << msg.str() << "\n";
             continue;
@@ -147,13 +147,16 @@ void ScanDir(const std::string &dir)
 int main(int argc, char **argv)
 {
     int opt = 0;
-    while ((opt = getopt(argc, argv, "dh")) != -1) {
+    while ((opt = getopt(argc, argv, "p:dh")) != -1) {
         switch (opt) {
         case 'd':
             g_DaemonMode = ! g_DaemonMode;
             break;
+        case 'p':
+            g_PidFile = optarg;
+            break;
         case 'h':
-            std::cerr << "Usage: " << argv[0] << " [-d] DIR\n";
+            std::cerr << "Usage: " << argv[0] << " [-p PID_FILE] [-d] DIR\n";
             return 1;
             break;
         default:
@@ -172,11 +175,25 @@ int main(int argc, char **argv)
 
     if (g_DaemonMode)
     {
-        // switch to the work dir, so it is not unmounted from beneath us.
-        chdir(dir);
-        daemon(1, 0);
-        openlog("fit-sync", 0, LOG_USER);
-        syslog(LOG_NOTICE, "started up, will process %s", dir);
+        try {
+            // switch to the work dir, so it is not unmounted from beneath us.
+            int r = chdir(dir);
+            if (r != 0) {
+                std::ostringstream msg;
+                msg << "chdir( " << dir << ")";
+                throw UnixException(msg.str(), errno);
+            }
+            r = daemon(1, 0);
+            if (r != 0) {
+                throw UnixException("daemon", errno);
+            }
+            openlog("fit-sync", 0, LOG_USER);
+            syslog(LOG_NOTICE, "started up, will process %s", dir);
+        }
+        catch (const std::exception &e) {
+            std::cerr << e.what() << std::endl;
+            return 1;
+        }
     }
 
     if (! AquirePidLock(g_PidFile)) return 1;
@@ -191,7 +208,7 @@ int main(int argc, char **argv)
     }
     catch (std::exception &e) {
         std::cout << e.what() << "\n";
-        syslog(LOG_ERR, e.what());
+        syslog(LOG_ERR, "%s", e.what());
     }
 
     ReleasePidLock(g_PidFile);

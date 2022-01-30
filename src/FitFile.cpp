@@ -383,10 +383,10 @@ void FitType<ID, BT, NA>::ReadFrom(FitDataBuffer &buf)
     } val;
     
     if (buf.ShouldRevertBytes()) {
-        for (unsigned i = sizeof(BT) - 1; i >= 0; --i)
+        for (int i = sizeof(BT) - 1; i >= 0; --i)
             val.d[i] = buf.ReadByte();
     } else {
-        for (unsigned i = 0; i < sizeof(BT); ++i)
+        for (size_t i = 0; i < sizeof(BT); ++i)
             val.d[i] = buf.ReadByte();
     }
     value = val.b;
@@ -597,6 +597,7 @@ struct MessageDef
     std::vector<DevFieldDef> DevFields;
 };
 
+#if 0
 std::ostream& operator<<(std::ostream &o, const MessageDef &m)
 {
     o << "#<MDEF local: " << m.LocalNumber << " global: " << m.GlobalNumber
@@ -604,6 +605,7 @@ std::ostream& operator<<(std::ostream &o, const MessageDef &m)
       << " dev fields: " << m.DevFields.size() << ">";
     return o;
 }
+#endif
 
 class FitReader {
 public:

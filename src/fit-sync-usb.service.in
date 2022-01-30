@@ -2,12 +2,13 @@
 
 [Unit]
 Description=Download FIT files from Garmin devices (USB version)
+After=fit-sync-setup.service
 
 [Service]
 Type=forking
 PIDFile=/run/fit-sync/fit-sync-usb.pid
-ExecStart=@@PREFIX@@/bin/fit-sync-usb -d /media/garmin/GARMIN
+ExecStart=@@BINDIR@@/fit-sync-usb -d /media/garmin/GARMIN
 Restart=no
 WorkingDirectory=/media/garmin
-User=pi
-Group=users
+User=@@USER@@
+Group=@@GROUP@@
