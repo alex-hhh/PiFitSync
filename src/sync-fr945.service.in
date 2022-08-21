@@ -9,8 +9,8 @@ After=mount-fr945.service
 [Service]
 Type=forking
 PIDFile=/run/fit-sync/fit-sync-fr945.pid
-ExecStart=@@BINDIR@@/fit-sync-usb -p /run/fit-sync/fit-sync-fr945.pid -d /media/fr945/Primary/GARMIN
+ExecStart=@@BINDIR@@/fit-sync-usb -p /run/fit-sync/fit-sync-fr945.pid -d .
 Restart=no
-WorkingDirectory=/media/fr945/Primary/GARMIN
+WorkingDirectory=/media/fr945/Internal Storage/GARMIN
 User=@@USER@@
 Group=@@GROUP@@
