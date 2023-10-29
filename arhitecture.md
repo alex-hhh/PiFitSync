@@ -152,7 +152,9 @@ the steps below are used to mount these drives and start up `fit-sync-usb`
 The whole process is controlled by UDEV rules which trigger when a new
 "sd[a-z]" device shows up.  `blkid` is used to get the drive label and, if the
 label is "GARMIN", the device is mounted using `/bin/mount` and the
-`fit-sync-usb.service` is started.
+`fit-sync-usb.service` is started.  Note that mounting is done by starting a
+separate service (`mount-garmin@.service`), since mounting file systems are
+"lost" since UDEV runs the processes in as separate namespace.
 
 The rules also arrange for an unmount command to be used when the device is
 removed.
@@ -171,18 +173,22 @@ GOTO="end_automount"
 
 LABEL="garmin_automount"
 
-ACTION=="add", RUN+="/bin/mount -t vfat -osync,noexec,noatime,nodiratime,uid=ubuntu /dev/%k /media/garmin"
+ACTION=="add", RUN+="/bin/systemctl start mount-garmin@%k.service"
 ACTION=="add", RUN+="/bin/systemctl start fit-sync-usb.service"
 ACTION=="add", RUN+="/bin/systemctl start fit-sync-epo.service"
 
 # Run umount when the device is removed (this will only useful if the device
 # is prematurely removed.)
-ACTION=="remove", RUN+="/bin/umount -l /media/garmin"
+ACTION=="remove", RUN+="/bin/systemctl stop mount-garmin@%k.service"
 
 GOTO="end_automount"
 
 LABEL="end_automount"
 ```
+
+The `mount-garmin@.service` is a service that mounts the garmin device -- we
+cannot run mount directly from an udev rule, since this process is run in a
+separate namespace and the mount is not visible to the "outside" world.
 
 The `fit-sync-usb.service` simply launches `fit-sync-usb` -- this is needed
 since programs run as part of an udev rule must complete quickly and udev ends

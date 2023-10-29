@@ -8,6 +8,11 @@ PREFIX=/usr/local
 USER=$(shell whoami)
 GROUP=$(firstword $(shell groups))
 
+## Don't make the mount point the same as the volume label
+## (e.g. /media/garmin), as systemd will attempt to automount it and will
+## fail.
+GARMIN_MOUNT_POINT=/media/garmin-edge
+
 # NOTE DESTDIR can be specified on the command line
 
 #### non serviceable parts bellow
@@ -26,14 +31,17 @@ ANT_OBJS=$(ANT_SOURCES:.cpp=.o)
 USB_SOURCES=fit-sync-usb.cpp
 USB_OBJS=$(USB_SOURCES:.cpp=.o)
 
-TARGETS= fit-sync-ant fit-sync-usb fit-sync-epo.py \
-      99-fit-sync.rules         \
-      fit-sync-setup.service    \
-      fit-sync-ant.service      \
-      fit-sync-usb.service      \
-      fit-sync-epo.service	\
-      mount-fr945.service	\
-      sync-fr945.service
+TARGETS= fit-sync-ant		\
+	fit-sync-usb		\
+	fit-sync-epo.py 	\
+	99-fit-sync.rules 	\
+	fit-sync-setup.service	\
+	fit-sync-ant.service 	\
+	fit-sync-usb.service 	\
+	fit-sync-epo.service	\
+	mount-garmin@.service 	\
+	mount-fr945.service	\
+	sync-fr945.service
 
 all : $(TARGETS)
 
@@ -54,7 +62,7 @@ clean:
 
 install: $(TARGETS)
 	mkdir --parents $(DESTDIR)$(BINDIR)
-	mkdir --parents /media/garmin || true
+	mkdir --parents /media/garmin-edge || true
 	mkdir --parents /media/fr945 || true
 	$(INSTALL) --strip fit-sync-ant $(DESTDIR)$(BINDIR)
 	$(INSTALL) --strip fit-sync-usb $(DESTDIR)$(BINDIR)
@@ -68,6 +76,7 @@ install: $(TARGETS)
 	$(INSTALL) -m 644 fit-sync-usb.service $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -m 644 fit-sync-ant.service $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -m 644 fit-sync-epo.service $(DESTDIR)$(SYSTEMDDIR)
+	$(INSTALL) -m 644 mount-garmin@.service $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -m 644 mount-fr945.service $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -m 644 sync-fr945.service $(DESTDIR)$(SYSTEMDDIR)
 	systemctl daemon-reload
@@ -83,8 +92,9 @@ install: $(TARGETS)
 
 % : %.in
 	@echo "Creating $@ ..."
-	@$(SED) -e "s+@@PREFIX@@+$(PREFIX)+" 	\
-		-e "s+@@BINDIR@@+$(BINDIR)+" 	\
-		-e "s+@@USER@@+$(USER)+"    	\
-		-e "s+@@GROUP@@+$(GROUP)+"  	\
+	@$(SED) -e "s+@@PREFIX@@+$(PREFIX)+"	\
+		-e "s+@@BINDIR@@+$(BINDIR)+"	\
+		-e "s+@@USER@@+$(USER)+"	\
+		-e "s+@@GROUP@@+$(GROUP)+"	\
+		-e "s+@@GARMIN_MOUNT_POINT@@+$(GARMIN_MOUNT_POINT)+" \
 		$^ > $@

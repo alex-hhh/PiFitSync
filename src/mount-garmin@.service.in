@@ -1,0 +1,9 @@
+; -*- mode: conf -*-
+[Unit]
+Description=Mount USB Drive at /dev/%i on @@GARMIN_MOUNT_POINT@@
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/bin/mount -t vfat -osync,noexec,noatime,nodiratime,uid=@@USER@@ /dev/%i @@GARMIN_MOUNT_POINT@@
+ExecStop=/bin/umount -l @@GARMIN_MOUNT_POINT@@

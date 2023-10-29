@@ -78,11 +78,11 @@ Also add the following to the end of the same file (`/etc/samba/smb.conf`):
 
 ### Install PiFitSync
 
-#### Prerequisites
+#### Install other prerequisites
 
 Packages `libudev`, `git`, `python3` and `rsync`, `libusb` and `jmtpfs` will
 need to be installed first:
-
+  
     sudo apt-get install libudev-dev git rsync libusb-1.0-0-dev jmtpfs
 
 #### Build and install FitSync

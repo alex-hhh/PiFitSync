@@ -34,33 +34,21 @@ GOTO="end_automount"
 
 LABEL="start_automount"
 IMPORT{program}="/sbin/blkid -o udev -p /dev/%k"
-ENV{ID_FS_LABEL}=="Fly6", GOTO="fly6_automount"
 ENV{ID_FS_LABEL}=="GARMIN", GOTO="garmin_automount"
 GOTO="end_automount"
 
-### Mount a Garmin device on /media/garmin and start synching files
+### Mount a Garmin device and start synching files
 
 LABEL="garmin_automount"
 
-ACTION=="add", RUN+="/bin/mount -t vfat -osync,noexec,noatime,nodiratime,uid=@@USER@@ /dev/%k /media/garmin"
+ACTION=="add", RUN+="/bin/systemctl start mount-garmin@%k.service"
 ACTION=="add", RUN+="/bin/systemctl start fit-sync-usb.service"
 ACTION=="add", RUN+="/bin/systemctl start fit-sync-epo.service"
 
 # Run umount when the device is removed (this will only useful if the device
 # is prematurely removed.)
-ACTION=="remove", RUN+="/bin/umount -l /media/garmin"
+ACTION=="remove", RUN+="/bin/systemctl stop mount-garmin@%k.service"
 
-GOTO="end_automount"
-
-### Mount a fly6 camera on /media/fly6
-
-LABEL="fly6_automount"
-
-ACTION=="add", RUN+="/bin/mount -t vfat -osync,noexec,noatime,nodiratime,uid=@@USER@@ /dev/%k /media/fly6"
-
-# Run umount when the device is removed (this will only useful if the device
-# is prematurely removed.)
-ACTION=="remove", RUN+="/bin/umount -l /media/fly6"
 GOTO="end_automount"
 
 LABEL="end_automount"

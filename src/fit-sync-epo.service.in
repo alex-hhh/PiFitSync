@@ -5,8 +5,8 @@ Description=Update EPO data for Garmin devices
 
 [Service]
 Type=simple
-ExecStart=@@BINDIR@@/fit-sync-epo -s /media/garmin/GARMIN/REMOTESW/EPO.BIN
+ExecStart=@@BINDIR@@/fit-sync-epo -s REMOTESW/EPO.BIN
 Restart=no
-WorkingDirectory=/media/garmin
+WorkingDirectory=@@GARMIN_MOUNT_POINT@@/GARMIN
 User=@@USER@@
 Group=@@GROUP@@

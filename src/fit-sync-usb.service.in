@@ -7,8 +7,8 @@ After=fit-sync-setup.service
 [Service]
 Type=forking
 PIDFile=/run/fit-sync/fit-sync-usb.pid
-ExecStart=@@BINDIR@@/fit-sync-usb -d /media/garmin/GARMIN
+ExecStart=@@BINDIR@@/fit-sync-usb -d .
 Restart=no
-WorkingDirectory=/media/garmin
+WorkingDirectory=@@GARMIN_MOUNT_POINT@@/GARMIN
 User=@@USER@@
 Group=@@GROUP@@
