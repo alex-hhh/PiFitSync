@@ -33,10 +33,15 @@ busnum=`cat busnum`
 devnum=`cat devnum`
 
 if [[ $vendor_id == "091e" && $product_id == "4c29" ]]; then
-    echo $kernel_name > /var/run/fit-sync/mtp-kname
-    echo "$busnum,$devnum" > /var/run/fit-sync/mtp-device
+    echo $kernel_name > /var/run/fit-sync/mtp-fr945-kname
+    echo "$busnum,$devnum" > /var/run/fit-sync/mtp-fr945-device
     /usr/bin/systemctl start mount-fr945.service
     /usr/bin/systemctl start sync-fr945.service
+elif [[ $vendor_id == "05c6" && $product_id == "9039" ]]; then
+    echo $kernel_name > /var/run/fit-sync/mtp-bolt-kname
+    echo "$busnum,$devnum" > /var/run/fit-sync/mtp-bolt-device
+    /usr/bin/systemctl start mount-bolt.service
+    /usr/bin/systemctl start sync-bolt.service
 else
-    echo "$script_name: not a FR945: $device_path, ignoring"
+    echo "$script_name: not a known device: $device_path, ignoring"
 fi

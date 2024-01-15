@@ -14,11 +14,14 @@ fi
 
 # This script is invoked for every USB device that is removed, so we need to
 # check if our device is the one that was actually removed.
-if [ -r /var/run/fit-sync/mtp-kname ]; then
-    our_kernel_name=`cat /var/run/fit-sync/mtp-kname`
-    if [[ $kernel_name == $our_kernel_name ]]; then
-        /usr/bin/systemctl stop mount-fr945.service
-        rm -f /var/run/fit-sync/mtp-kname
-        rm -f /var/run/fit-sync/mtp-device
+
+for d in fr945 bolt; do
+    if [ -r /var/run/fit-sync/mtp-$d-kname ]; then
+        our_kernel_name=`cat /var/run/fit-sync/mtp-$d-kname`
+        if [[ $kernel_name == $our_kernel_name ]]; then
+            /usr/bin/systemctl stop mount-$d.service
+            rm -f /var/run/fit-sync/mtp-$d-kname
+            rm -f /var/run/fit-sync/mtp-$d-device
+        fi
     fi
-fi
+done

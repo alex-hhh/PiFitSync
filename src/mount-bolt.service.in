@@ -1,0 +1,12 @@
+; -*- mode: conf -*-
+[Unit]
+Description=Mount the Wahoo Element Bolt MTP Device
+
+[Service]
+Type=forking
+ExecStart=@@BINDIR@@/mount-bolt
+ExecStop=/usr/bin/fusermount -u /media/bolt
+Restart=no
+WorkingDirectory=/
+User=root
+Group=root

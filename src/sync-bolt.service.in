@@ -1,0 +1,16 @@
+; -*- mode: conf -*-
+
+[Unit]
+Description=Download FIT files from a Wahoo ELEMNT Bolt
+After=fit-sync-setup.service
+Requires=mount-bolt.service
+After=mount-bolt.service
+
+[Service]
+Type=forking
+PIDFile=/run/fit-sync/fit-sync-bolt.pid
+ExecStart=@@BINDIR@@/fit-sync-usb -p /run/fit-sync/fit-sync-bolt.pid -d .
+Restart=no
+WorkingDirectory=/media/bolt/Internal shared storage/exports
+User=@@USER@@
+Group=@@GROUP@@
