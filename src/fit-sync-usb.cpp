@@ -63,7 +63,11 @@ void GetFitFileId(Buffer &buf, fit::FitFileId &fid)
 
 };                                      // end anonymous namespace
 
-std::queue<std::string> DelayedDirs;
+std::queue<std::string> g_DelayedDirs;
+
+// when true, all FIT files are copied, by default only Activity FIT file
+// types are copied.
+bool g_AllFiles = false;
 
 std::string BaseName(const std::string &path)
 {
@@ -82,21 +86,25 @@ void ProcessFitFile(const std::string &path)
         ReadData(path, fit_file);
         fit::FitFileId fid;
         GetFitFileId(fit_file, fid);
-        auto p = GetFileStoragePath(
-            fid.SerialNumber,
-            static_cast<AntfsFileSubType>(fid.Type.value));
-        std::ostringstream target;
-        target << p << "/" << BaseName(path);
-        WriteData(target.str(), fit_file);
+        auto file_type = static_cast<AntfsFileSubType>(fid.Type.value);
+        if (g_AllFiles || file_type == FST_ACTIVITY)
+        {
+            auto p = GetFileStoragePath(
+                fid.SerialNumber,
+                file_type);
+            std::ostringstream target;
+            target << p << "/" << BaseName(path);
+            WriteData(target.str(), fit_file);
 
-        // Set the file access and modification times to the FIT creation
-        // time, to make them easier to identify.
-        struct utimbuf tb;
-        tb.actime = tb.modtime = fid.TimeCreated;
-        utime(target.str().c_str(), &tb);
+            // Set the file access and modification times to the FIT creation
+            // time, to make them easier to identify.
+            struct utimbuf tb;
+            tb.actime = tb.modtime = fid.TimeCreated;
+            utime(target.str().c_str(), &tb);
 
-        if (! g_DaemonMode)
-            std::cout << path << " went into " << target.str() << "\n";
+            if (! g_DaemonMode)
+                std::cout << path << " went into " << target.str() << "\n";
+        }
     }
     catch (const std::exception &e) {
         std::ostringstream msg;
@@ -132,7 +140,7 @@ void ScanDir(const std::string &dir)
         if (S_ISDIR(buf.st_mode)) {
             // WARNING: funny, but correct test below
             if (strcmp(e->d_name, ".") && strcmp(e->d_name, ".."))
-                DelayedDirs.push(path.str());
+                g_DelayedDirs.push(path.str());
         }
         else if (S_ISREG(buf.st_mode)) {
             char *p = strrchr(e->d_name, '.');
@@ -147,16 +155,19 @@ void ScanDir(const std::string &dir)
 int main(int argc, char **argv)
 {
     int opt = 0;
-    while ((opt = getopt(argc, argv, "p:dh")) != -1) {
+    while ((opt = getopt(argc, argv, "p:dah")) != -1) {
         switch (opt) {
         case 'd':
             g_DaemonMode = ! g_DaemonMode;
+            break;
+        case 'a':
+            g_AllFiles = true;
             break;
         case 'p':
             g_PidFile = optarg;
             break;
         case 'h':
-            std::cerr << "Usage: " << argv[0] << " [-p PID_FILE] [-d] DIR\n";
+            std::cerr << "Usage: " << argv[0] << " [-p PID_FILE] [-a] [-d] DIR\n";
             return 1;
             break;
         default:
@@ -199,10 +210,10 @@ int main(int argc, char **argv)
     if (! AquirePidLock(g_PidFile)) return 1;
 
     try {
-        DelayedDirs.push(dir);
-        while(! DelayedDirs.empty()) {
-            auto path = DelayedDirs.front();
-            DelayedDirs.pop();
+        g_DelayedDirs.push(dir);
+        while(! g_DelayedDirs.empty()) {
+            auto path = g_DelayedDirs.front();
+            g_DelayedDirs.pop();
             ScanDir(path);
         }
     }
