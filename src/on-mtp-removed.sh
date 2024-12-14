@@ -15,7 +15,7 @@ fi
 # This script is invoked for every USB device that is removed, so we need to
 # check if our device is the one that was actually removed.
 
-for d in fr945 bolt; do
+for d in fr945 edge540 bolt; do
     if [ -r /var/run/fit-sync/mtp-$d-kname ]; then
         our_kernel_name=`cat /var/run/fit-sync/mtp-$d-kname`
         if [[ $kernel_name == $our_kernel_name ]]; then

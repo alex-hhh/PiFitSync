@@ -1,0 +1,12 @@
+; -*- mode: conf -*-
+[Unit]
+Description=Mount the Edge 540 MTP device
+
+[Service]
+Type=forking
+ExecStart=@@BINDIR@@/mount-edge540
+ExecStop=/usr/bin/fusermount -u /media/edge540
+Restart=no
+WorkingDirectory=/
+User=root
+Group=root

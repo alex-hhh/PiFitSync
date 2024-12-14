@@ -42,6 +42,8 @@ TARGETS= fit-sync-ant			\
 	mount-garmin@.service 		\
 	mount-fr945.service		\
 	sync-fr945.service		\
+	mount-edge540.service		\
+	sync-edge540.service		\
 	mount-bolt.service 		\
 	sync-bolt.service
 
@@ -61,17 +63,20 @@ clean:
 	-rm fit-sync-setup.service fit-sync-usb.service fit-sync-epo.service
 	-rm fit-sync-ant.service
 	-rm mount-fr945.service sync-fr945.service
+	-rm mount-edge540.service sync-edge540.service
 	-rm mount-bolt.service sync-bolt.service
 
 install: $(TARGETS)
 	mkdir --parents $(DESTDIR)$(BINDIR)
 	mkdir --parents /media/garmin-edge || true
 	mkdir --parents /media/fr945 || true
+	mkdir --parents /media/edge540 || true
 	mkdir --parents /media/bolt || true
 	$(INSTALL) --strip fit-sync-ant $(DESTDIR)$(BINDIR)
 	$(INSTALL) --strip fit-sync-usb $(DESTDIR)$(BINDIR)
 	$(INSTALL) -m 755 fit-sync-epo.py $(DESTDIR)$(BINDIR)/fit-sync-epo
 	$(INSTALL) -m 755 mount-fr945.sh $(DESTDIR)$(BINDIR)/mount-fr945
+	$(INSTALL) -m 755 mount-edge540.sh $(DESTDIR)$(BINDIR)/mount-edge540
 	$(INSTALL) -m 755 mount-bolt.sh $(DESTDIR)$(BINDIR)/mount-bolt
 	$(INSTALL) -m 755 on-mtp-added.sh $(DESTDIR)$(BINDIR)/on-mtp-added
 	$(INSTALL) -m 755 on-mtp-removed.sh $(DESTDIR)$(BINDIR)/on-mtp-removed
@@ -84,6 +89,8 @@ install: $(TARGETS)
 	$(INSTALL) -m 644 mount-garmin@.service $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -m 644 mount-fr945.service $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -m 644 sync-fr945.service $(DESTDIR)$(SYSTEMDDIR)
+	$(INSTALL) -m 644 mount-edge540.service $(DESTDIR)$(SYSTEMDDIR)
+	$(INSTALL) -m 644 sync-edge540.service $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -m 644 mount-bolt.service $(DESTDIR)$(SYSTEMDDIR)
 	$(INSTALL) -m 644 sync-bolt.service $(DESTDIR)$(SYSTEMDDIR)
 	systemctl daemon-reload
