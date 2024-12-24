@@ -15,9 +15,11 @@ fit-sync-setup.service
 mount-garmin@.service
 mount-fr945.service
 mount-edge540.service
+mount-edge840.service
 mount-bolt.service
 sync-fr945.service
 sync-edge540.service
+sync-edge840.service
 sync-bolt.service
 
 *.o

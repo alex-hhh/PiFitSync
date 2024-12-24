@@ -1,0 +1,12 @@
+; -*- mode: conf -*-
+[Unit]
+Description=Mount the Edge 840 MTP device
+
+[Service]
+Type=forking
+ExecStart=@@BINDIR@@/mount-edge840
+ExecStop=/usr/bin/fusermount -u /media/edge840
+Restart=no
+WorkingDirectory=/
+User=root
+Group=root

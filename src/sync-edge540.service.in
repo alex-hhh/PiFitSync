@@ -11,6 +11,6 @@ Type=forking
 PIDFile=/run/fit-sync/fit-sync-edge540.pid
 ExecStart=@@BINDIR@@/fit-sync-usb -p /run/fit-sync/fit-sync-edge540.pid -d .
 Restart=no
-WorkingDirectory=/media/edge540/Internal Storage/GARMIN
+WorkingDirectory=/media/edge540/Internal Storage/Garmin
 User=@@USER@@
 Group=@@GROUP@@

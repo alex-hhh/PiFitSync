@@ -42,6 +42,11 @@ elif [[ $vendor_id == "091e" && $product_id == "4fdd" ]]; then
     echo "$busnum,$devnum" > /var/run/fit-sync/mtp-edge540-device
     /usr/bin/systemctl start mount-edge540.service
     /usr/bin/systemctl start sync-edge540.service
+elif [[ $vendor_id == "091e" && $product_id == "4fde" ]]; then
+    echo $kernel_name > /var/run/fit-sync/mtp-edge840-kname
+    echo "$busnum,$devnum" > /var/run/fit-sync/mtp-edge840-device
+    /usr/bin/systemctl start mount-edge840.service
+    /usr/bin/systemctl start sync-edge840.service
 elif [[ $vendor_id == "05c6" && $product_id == "9039" ]]; then
     echo $kernel_name > /var/run/fit-sync/mtp-bolt-kname
     echo "$busnum,$devnum" > /var/run/fit-sync/mtp-bolt-device

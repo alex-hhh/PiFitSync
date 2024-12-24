@@ -102,7 +102,9 @@ void ProcessFitFile(const std::string &path)
             tb.actime = tb.modtime = fid.TimeCreated;
             utime(target.str().c_str(), &tb);
 
-            if (! g_DaemonMode)
+            if (g_DaemonMode)
+                syslog(LOG_INFO, "%s went into %s", path.c_str(), target.str().c_str());
+            else
                 std::cout << path << " went into " << target.str() << "\n";
         }
     }

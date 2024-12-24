@@ -1,0 +1,16 @@
+; -*- mode: conf -*-
+
+[Unit]
+Description=Download FIT files from a Edge 840
+After=fit-sync-setup.service
+Requires=mount-edge840.service
+After=mount-edge840.service
+
+[Service]
+Type=forking
+PIDFile=/run/fit-sync/fit-sync-edge840.pid
+ExecStart=@@BINDIR@@/fit-sync-usb -p /run/fit-sync/fit-sync-edge840.pid -d .
+Restart=no
+WorkingDirectory=/media/edge840/Internal Storage/Garmin
+User=@@USER@@
+Group=@@GROUP@@
