@@ -21,6 +21,8 @@ sync-fr945.service
 sync-edge540.service
 sync-edge840.service
 sync-bolt.service
+rwgps-sync-settings.json
+rwgps-sync.service
 
 *.o
 *.d

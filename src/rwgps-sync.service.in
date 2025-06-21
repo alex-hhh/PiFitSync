@@ -1,0 +1,13 @@
+; -*- mode: conf -*-
+
+[Unit]
+Description=Sync Rwgps Routes
+After=fit-sync-setup.service
+
+[Service]
+Type=simple
+ExecStart=@@BINDIR@@/rwgps-sync @@ETCDIR@@/rwgps-sync-settings.json
+Restart=no
+WorkingDirectory=@@HOME_DIR@@
+User=@@USER@@
+Group=@@GROUP@@

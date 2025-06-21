@@ -43,7 +43,10 @@ LABEL="garmin_automount"
 
 ACTION=="add", RUN+="/bin/systemctl start mount-garmin@%k.service"
 ACTION=="add", RUN+="/bin/systemctl start fit-sync-usb.service"
-ACTION=="add", RUN+="/bin/systemctl start fit-sync-epo.service"
+# 25/06/11 Don't run this, it broke somwhere along the way and I don't need it
+# anyway
+
+# ACTION=="add", RUN+="/bin/systemctl start fit-sync-epo.service"
 
 # Run umount when the device is removed (this will only useful if the device
 # is prematurely removed.)

@@ -1,0 +1,9 @@
+{
+    "apiKey" : "@@RWGPS_SYNC_API_KEY@@",
+    "userEmail" : "@@RWGPS_SYNC_USER_EMAIL@@",
+    "userPassword": "@@RWGPS_SYNC_USER_PASSWORD@@",
+    "syncDirGpx" : "@@RWGPS_HOME_DIR@@/RwgpsSync/GPX",
+    "syncDirJson" : "@@RWGPS_HOME_DIR@@/RwgpsSync/Json",
+    "stateFile" : "@@RWGPS_HOME_DIR@@/RwgpsSyncData/rwgps-sync-state.db",
+    "logFile" : "@@RWGPS_HOME_DIR@@/RwgpsSyncData/rwgps-sync.log"
+}

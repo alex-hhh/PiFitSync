@@ -1,0 +1,10 @@
+[Unit]
+Description=Periodic run of rwgps sync
+
+[Timer]
+OnCalendar=daily
+AccuracySec=12h
+Persistent=false
+
+[Install]
+WantedBy=timers.target
