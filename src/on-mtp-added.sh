@@ -32,26 +32,29 @@ product_id=`cat idProduct`
 busnum=`cat busnum`
 devnum=`cat devnum`
 
-if [[ $vendor_id == "091e" && $product_id == "4c29" ]]; then
-    echo $kernel_name > /var/run/fit-sync/mtp-fr945-kname
-    echo "$busnum,$devnum" > /var/run/fit-sync/mtp-fr945-device
-    /usr/bin/systemctl start mount-fr945.service
-    /usr/bin/systemctl start sync-fr945.service
-elif [[ $vendor_id == "091e" && $product_id == "4fdd" ]]; then
-    echo $kernel_name > /var/run/fit-sync/mtp-edge540-kname
-    echo "$busnum,$devnum" > /var/run/fit-sync/mtp-edge540-device
-    /usr/bin/systemctl start mount-edge540.service
-    /usr/bin/systemctl start sync-edge540.service
-elif [[ $vendor_id == "091e" && $product_id == "4fde" ]]; then
-    echo $kernel_name > /var/run/fit-sync/mtp-edge840-kname
-    echo "$busnum,$devnum" > /var/run/fit-sync/mtp-edge840-device
-    /usr/bin/systemctl start mount-edge840.service
-    /usr/bin/systemctl start sync-edge840.service
-elif [[ $vendor_id == "05c6" && $product_id == "9039" ]]; then
-    echo $kernel_name > /var/run/fit-sync/mtp-bolt-kname
-    echo "$busnum,$devnum" > /var/run/fit-sync/mtp-bolt-device
-    /usr/bin/systemctl start mount-bolt.service
-    /usr/bin/systemctl start sync-bolt.service
+device_tag=
+
+if [[ $vendor_id == "091e" ]]; then     # Garmin devices
+    if [[ $product_id == "4c29" ]]; then
+        device_tag=fr945
+    elif [[ $product_id == "4fdd" ]]; then
+        device_tag=edge540
+    elif [[ $product_id == "4fde" ]]; then
+        device_tag=edge840
+    elif [[ $product_id == "50db" ]]; then
+        device_tag=fr965
+    fi
+elif [[ $vendor_id == "05c6" ]]; then   # Wahoo devices
+     if [[ $product_id == "9039" ]]; then
+         device_tag=bolt
+     fi
+fi
+
+if [[ -z $device_tag ]]; then
+   echo "$script_name: not a known device: $device_path, ignoring"
 else
-    echo "$script_name: not a known device: $device_path, ignoring"
+    echo $kernel_name > /var/run/fit-sync/mtp-$device_tag-kname
+    echo "$busnum,$devnum" > /var/run/fit-sync/mtp-$device_tag-device
+    /usr/bin/systemctl start mount-$device_tag.service
+    /usr/bin/systemctl start sync-$device_tag.service
 fi

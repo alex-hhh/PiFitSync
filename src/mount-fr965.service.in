@@ -1,0 +1,12 @@
+; -*- mode: conf -*-
+[Unit]
+Description=Mount the Forerunner 965 MTP device
+
+[Service]
+Type=forking
+ExecStart=@@BINDIR@@/mount-fr965
+ExecStop=/usr/bin/fusermount -u /media/fr965
+Restart=no
+WorkingDirectory=/
+User=root
+Group=root
