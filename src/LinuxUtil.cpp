@@ -43,13 +43,13 @@ namespace FitSync
   
     void ReadData(const std::string &file_name, Buffer &data)
     {
-        // Read data in 10kb chunks.  Most FIT files should have less than one
-        // chunk.
-        const int chunk_size = 10 * 1024;
+        // Read data in 100kb chunks.  Most FIT files should have less than
+        // one chunk.
+        const int chunk_size = 100 * 1024;
         // Limit file sizes, since we are on an embedded system (Raspberry
-        // PI).  2 Mb FIT files would be very large, so we should be safe with
-        // this limit
-        const int max_size = 2 * 1024 * 1024;
+        // PI).  10 Mb FIT files would be very large, so we should be safe
+        // with this limit
+        const int max_size = 10 * 1024 * 1024;
 
         data.clear();
         int fd = ::open(file_name.c_str(), O_RDONLY);

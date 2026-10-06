@@ -43,6 +43,8 @@ if [[ $vendor_id == "091e" ]]; then     # Garmin devices
         device_tag=edge840
     elif [[ $product_id == "50db" ]]; then
         device_tag=fr965
+    elif [[ $product_id == "5334" ]]; then
+        device_tag=fr70
     fi
 elif [[ $vendor_id == "05c6" ]]; then   # Wahoo devices
      if [[ $product_id == "9039" ]]; then

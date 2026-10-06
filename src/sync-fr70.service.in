@@ -1,0 +1,16 @@
+; -*- mode: conf -*-
+
+[Unit]
+Description=Download FIT files from a FR70
+After=fit-sync-setup.service
+Requires=mount-fr70.service
+After=mount-fr70.service
+
+[Service]
+Type=forking
+PIDFile=/run/fit-sync/fit-sync-fr70.pid
+ExecStart=@@BINDIR@@/fit-sync-usb -p /run/fit-sync/fit-sync-fr70.pid -d .
+Restart=no
+WorkingDirectory=/media/fr70/Internal Storage/GARMIN
+User=@@USER@@
+Group=@@GROUP@@
